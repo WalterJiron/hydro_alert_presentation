@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { animate } from "animejs";
+import { animate, stagger } from "animejs";
 import clsx from "clsx";
 
 import { PhoneFrame } from "@/components/ui/phone-frame";
@@ -136,22 +136,35 @@ export function Showcase() {
 
     if (panelRef.current) {
       animate(panelRef.current, {
-        opacity: [0, 1],
-        translateY: [16, 0],
-        duration: 560,
+        duration: 540,
         ease: "outExpo",
+        opacity: [0, 1],
+        translateY: [14, 0],
       });
+
+      const bullets = panelRef.current.querySelectorAll("li");
+
+      if (bullets.length > 0) {
+        animate(bullets, {
+          delay: stagger(65, { start: 90 }),
+          duration: 480,
+          ease: "outQuad",
+          opacity: [0, 1],
+          translateX: [12, 0],
+        });
+      }
     }
 
     if (phoneRef.current) {
       animate(phoneRef.current, {
-        opacity: [0.35, 1],
-        scale: [0.97, 1],
-        duration: 620,
+        duration: 650,
         ease: "outExpo",
+        opacity: [0.35, 1],
+        scale: [0.96, 1],
+        translateY: [10, 0],
       });
     }
-  }, [activeId]);
+  }, [activeId, emergency]);
 
   return (
     <section
@@ -212,11 +225,11 @@ export function Showcase() {
           <div ref={phoneRef} className="relative flex justify-center">
             <div
               aria-hidden="true"
-              className="absolute left-1/2 top-1/2 h-[24rem] w-[24rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-400/8"
+              className="absolute left-1/2 top-1/2 h128 w128 -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-400/8"
             />
             <div
               aria-hidden="true"
-              className="absolute left-1/2 top-1/2 h-[18rem] w-[18rem] -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-400/10"
+              className="absolute left-1/2 top-1/2 h96 w96 -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-400/10"
             />
 
             <div className="animate-hydro-float">

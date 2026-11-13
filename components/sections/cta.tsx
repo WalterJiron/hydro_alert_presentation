@@ -1,7 +1,16 @@
+"use client";
+
+import dynamic from "next/dynamic";
+
+import { Magnetic } from "@/components/ui/magnetic";
 import { Reveal } from "@/components/ui/reveal";
 import { DownloadIcon, RadarIcon, WavesIcon } from "@/components/icons";
 import { siteConfig } from "@/config/site";
 import { techStack } from "@/config/content";
+
+const SeismicWaves = dynamic(() => import("@/components/ui/seismic-waves"), {
+  ssr: false,
+});
 
 export function Cta() {
   return (
@@ -19,11 +28,12 @@ export function Cta() {
             />
             <div
               aria-hidden="true"
-              className="absolute -right-24 top-1/2 hidden h-[26rem] w-[26rem] -translate-y-1/2 rounded-full border border-cyan-300/10 lg:block"
+              className="pointer-events-none absolute -right-20 top-1/2 hidden h-128 w-lg -translate-y-1/2 overflow-hidden rounded-full lg:block"
             >
-              <span className="absolute inset-10 rounded-full border border-cyan-300/10" />
-              <span className="absolute inset-20 rounded-full border border-cyan-300/10" />
-              <span className="absolute inset-0 animate-hydro-radar rounded-full bg-[conic-gradient(from_0deg,rgba(34,211,238,0.07),transparent_65%)]" />
+              <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(34,211,238,0.14),transparent_65%)] blur-2xl" />
+              <SeismicWaves className="opacity-80" />
+              <div className="absolute inset-0 rounded-full border border-cyan-300/20" />
+              <div className="absolute inset-12 rounded-full border border-cyan-300/10" />
             </div>
 
             <div className="relative grid items-center gap-8 lg:grid-cols-[1.2fr_0.8fr]">
@@ -44,24 +54,28 @@ export function Cta() {
                 </p>
 
                 <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
-                  <a
-                    className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-cyan-400 px-6 text-sm font-semibold text-[#02141b] shadow-[0_0_38px_-10px_rgba(34,211,238,0.8)] transition-all hover:bg-cyan-300"
-                    download={siteConfig.apk.filename}
-                    href={siteConfig.apk.href}
-                  >
-                    <DownloadIcon
-                      className="transition-transform group-hover:translate-y-0.5"
-                      size={16}
-                    />
-                    Descargar APK
-                  </a>
-                  <a
-                    className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/12 bg-white/4 px-6 text-sm font-medium text-white/70 transition-colors hover:border-cyan-300/30 hover:text-white"
-                    href="#instalacion"
-                  >
-                    <RadarIcon size={15} />
-                    Ver guía de instalación
-                  </a>
+                  <Magnetic>
+                    <a
+                      className="group inline-flex h-12 items-center justify-center gap-2 rounded-full bg-cyan-400 px-6 text-sm font-semibold text-[#02141b] shadow-[0_0_38px_-10px_rgba(34,211,238,0.8)] transition-all hover:bg-cyan-300"
+                      download={siteConfig.apk.filename}
+                      href={siteConfig.apk.href}
+                    >
+                      <DownloadIcon
+                        className="transition-transform group-hover:translate-y-0.5"
+                        size={16}
+                      />
+                      Descargar APK
+                    </a>
+                  </Magnetic>
+                  <Magnetic>
+                    <a
+                      className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/12 bg-white/4 px-6 text-sm font-medium text-white/70 transition-colors hover:border-cyan-300/30 hover:text-white"
+                      href="#instalacion"
+                    >
+                      <RadarIcon size={15} />
+                      Ver guía de instalación
+                    </a>
+                  </Magnetic>
                 </div>
 
                 <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.18em] text-white/30">
@@ -87,7 +101,7 @@ export function Cta() {
                     </span>
                   ))}
                 </div>
-                <div className="mt-4 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+                <div className="mt-4 h-px bg-linear-to-r from-transparent via-white/15 to-transparent" />
                 <div className="mt-2 flex items-center justify-between">
                   <span className="inline-flex items-center gap-1.5 text-[9px] uppercase tracking-[0.14em] text-emerald-300/70">
                     <span className="h-1 w-1 rounded-full bg-emerald-300 animate-hydro-blink" />

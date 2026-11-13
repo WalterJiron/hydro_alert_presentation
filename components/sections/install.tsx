@@ -5,6 +5,7 @@ import Image from "next/image";
 
 import { HoloCard } from "@/components/ui/holo-card";
 import { AppIcon } from "@/components/ui/icon-map";
+import { Magnetic } from "@/components/ui/magnetic";
 import { Reveal } from "@/components/ui/reveal";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { installSteps } from "@/config/content";
@@ -67,17 +68,19 @@ export function Install() {
                       {siteConfig.apk.channel}
                     </p>
                   </div>
-                  <a
-                    className="group inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-cyan-400 px-6 text-sm font-semibold text-[#02141b] shadow-[0_0_34px_-8px_rgba(34,211,238,0.8)] transition-all hover:bg-cyan-300"
-                    download={siteConfig.apk.filename}
-                    href={siteConfig.apk.href}
-                  >
-                    <DownloadIcon
-                      className="transition-transform group-hover:translate-y-0.5"
-                      size={17}
-                    />
-                    Descargar APK
-                  </a>
+                  <Magnetic>
+                    <a
+                      className="group inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-cyan-400 px-6 text-sm font-semibold text-[#02141b] shadow-[0_0_34px_-8px_rgba(34,211,238,0.8)] transition-all hover:bg-cyan-300"
+                      download={siteConfig.apk.filename}
+                      href={siteConfig.apk.href}
+                    >
+                      <DownloadIcon
+                        className="transition-transform group-hover:translate-y-0.5"
+                        size={17}
+                      />
+                      Descargar APK
+                    </a>
+                  </Magnetic>
                 </div>
 
                 <div className="mt-4 grid grid-cols-3 gap-2 border-t border-white/7 pt-4">

@@ -1,5 +1,6 @@
 import { AppIcon } from "@/components/ui/icon-map";
 import { Reveal } from "@/components/ui/reveal";
+import { SeismographTrace } from "@/components/ui/seismograph-trace";
 import { contextStats } from "@/config/content";
 
 export function Context() {
@@ -26,6 +27,12 @@ export function Context() {
               anomalías: son eventos recurrentes que amenazan a las familias, la
               infraestructura y la continuidad de las comunidades.
             </p>
+            <div className="mt-6 max-w-md">
+              <SeismographTrace
+                magnitude="M 5.2"
+                source="Red Sísmica Nacional · INETER"
+              />
+            </div>
           </Reveal>
 
           <div className="grid gap-3 sm:grid-cols-3">

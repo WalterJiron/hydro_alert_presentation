@@ -1,8 +1,99 @@
+"use client";
+
+import * as React from "react";
+import { animate } from "animejs";
+
 import { AppIcon } from "@/components/ui/icon-map";
 import { Reveal } from "@/components/ui/reveal";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { pillars, solutions } from "@/config/content";
 import { CheckIcon } from "@/components/icons";
+
+function PillarConnector() {
+  const lineRef = React.useRef<SVGPathElement>(null);
+  const pulseRef = React.useRef<SVGCircleElement>(null);
+
+  React.useEffect(() => {
+    const line = lineRef.current;
+    const pulse = pulseRef.current;
+
+    if (!line || !pulse) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const length = line.getTotalLength();
+
+    line.style.strokeDasharray = `${length}`;
+    line.style.strokeDashoffset = `${length}`;
+
+    const lineAnim = animate(line, {
+      duration: 1800,
+      ease: "outExpo",
+      loop: false,
+      strokeDashoffset: [length, 0],
+    });
+
+    const pulseAnim = animate(pulse, {
+      direction: "alternate",
+      duration: 2600,
+      ease: "inOutSine",
+      loop: true,
+      translateX: [0, 680],
+    });
+
+    return () => {
+      lineAnim.pause();
+      pulseAnim.pause();
+    };
+  }, []);
+
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute left-[16%] right-[16%] top-9 hidden h-4 -translate-y-1/2 md:block"
+    >
+      <svg
+        className="h-full w-full overflow-visible"
+        preserveAspectRatio="none"
+        viewBox="0 0 680 16"
+      >
+        <path
+          d="M0,8 L680,8"
+          fill="none"
+          stroke="rgba(34,211,238,0.15)"
+          strokeWidth="1.5"
+        />
+        <path
+          ref={lineRef}
+          d="M0,8 L680,8"
+          fill="none"
+          stroke="url(#solution-line-gradient)"
+          strokeWidth="2"
+        />
+        <circle
+          ref={pulseRef}
+          cx="0"
+          cy="8"
+          fill="#22d3ee"
+          filter="drop-shadow(0 0 8px rgba(34,211,238,0.95))"
+          r="3"
+        />
+        <defs>
+          <linearGradient
+            id="solution-line-gradient"
+            x1="0"
+            x2="1"
+            y1="0"
+            y2="0"
+          >
+            <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.4" />
+            <stop offset="50%" stopColor="#22d3ee" stopOpacity="0.9" />
+            <stop offset="100%" stopColor="#ff6a13" stopOpacity="0.8" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </div>
+  );
+}
 
 export function Solution() {
   return (
@@ -38,10 +129,7 @@ export function Solution() {
         />
 
         <div className="relative mt-14 grid gap-4 md:grid-cols-3">
-          <div
-            aria-hidden="true"
-            className="absolute left-[16%] right-[16%] top-9 hidden h-px bg-gradient-to-r from-cyan-400/10 via-cyan-400/45 to-orange-400/30 md:block"
-          />
+          <PillarConnector />
 
           {pillars.map((pillar, index) => (
             <Reveal key={pillar.title} delay={index * 120}>

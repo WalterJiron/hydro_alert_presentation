@@ -138,6 +138,99 @@ export default function HydroScene({ className }: HydroSceneProps) {
       rings.push(ring);
     });
 
+    // Ondas sísmicas concéntricas de epicentro (ondas P y S)
+    const shockwaveCount = 4;
+    const shockwaveMeshes: {
+      mesh: THREE.Mesh;
+      baseRadius: number;
+      offset: number;
+      speed: number;
+    }[] = [];
+
+    // Epicentro principal (zona del Pacífico / Nicaragua)
+    const epicenterNorm = new THREE.Vector3(0.52, 0.45, 0.72).normalize();
+    const epicenterPos = epicenterNorm.clone().multiplyScalar(2.06);
+
+    for (let i = 0; i < shockwaveCount; i += 1) {
+      const ringGeo = new THREE.RingGeometry(0.04, 0.08, 36);
+      const ringMat = new THREE.MeshBasicMaterial({
+        color: i % 2 === 0 ? 0xff6a13 : 0x22d3ee,
+        transparent: true,
+        opacity: 0.8,
+        side: THREE.DoubleSide,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+      });
+      const shockwaveMesh = new THREE.Mesh(ringGeo, ringMat);
+
+      shockwaveMesh.position.copy(epicenterPos);
+      shockwaveMesh.quaternion.setFromUnitVectors(
+        new THREE.Vector3(0, 0, 1),
+        epicenterNorm,
+      );
+
+      group.add(shockwaveMesh);
+      shockwaveMeshes.push({
+        mesh: shockwaveMesh,
+        baseRadius: 0.06,
+        offset: i * 0.25,
+        speed: 0.42,
+      });
+    }
+
+    // Baliza luminosa en el epicentro
+    const beaconGeo = new THREE.SphereGeometry(0.045, 12, 12);
+    const beaconMat = new THREE.MeshBasicMaterial({
+      color: 0xff8a3d,
+      transparent: true,
+      opacity: 0.95,
+      blending: THREE.AdditiveBlending,
+    });
+    const beaconMesh = new THREE.Mesh(beaconGeo, beaconMat);
+
+    beaconMesh.position.copy(epicenterPos);
+    group.add(beaconMesh);
+
+    // Arco de telemetría entre estaciones (curva 3D cuadrática)
+    const stationPos = new THREE.Vector3(-0.75, 0.88, 1.45)
+      .normalize()
+      .multiplyScalar(2.06);
+    const midPoint = epicenterPos
+      .clone()
+      .add(stationPos)
+      .multiplyScalar(0.5)
+      .normalize()
+      .multiplyScalar(2.75); // Se eleva en el espacio
+
+    const arcCurve = new THREE.QuadraticBezierCurve3(
+      epicenterPos,
+      midPoint,
+      stationPos,
+    );
+    const arcPoints = arcCurve.getPoints(50);
+    const arcGeometry = new THREE.BufferGeometry().setFromPoints(arcPoints);
+    const arcMaterial = new THREE.LineBasicMaterial({
+      color: 0x22d3ee,
+      transparent: true,
+      opacity: 0.45,
+      blending: THREE.AdditiveBlending,
+    });
+    const arcLine = new THREE.Line(arcGeometry, arcMaterial);
+
+    group.add(arcLine);
+
+    // Paquete de datos que viaja por el arco de telemetría
+    const packetGeo = new THREE.SphereGeometry(0.038, 8, 8);
+    const packetMat = new THREE.MeshBasicMaterial({
+      color: 0x9df5ff,
+      transparent: true,
+      opacity: 0.9,
+      blending: THREE.AdditiveBlending,
+    });
+    const packetMesh = new THREE.Mesh(packetGeo, packetMat);
+
+    group.add(packetMesh);
+
     // Puntos de fondo (profundidad)
     const dustCount = isCompact ? 280 : 700;
     const dustPositions = new Float32Array(dustCount * 3);
@@ -203,6 +296,26 @@ export default function HydroScene({ className }: HydroSceneProps) {
       dust.rotation.y -= delta * 0.012;
 
       pointsMaterial.opacity = 0.65 + Math.sin(elapsed * 1.2) * 0.15;
+
+      // Animación de ondas sísmicas del epicentro
+      shockwaveMeshes.forEach((item) => {
+        const progress = (elapsed * item.speed + item.offset) % 1;
+        const scale = 1 + progress * 8.5;
+
+        item.mesh.scale.set(scale, scale, scale);
+        const mat = item.mesh.material as THREE.MeshBasicMaterial;
+
+        mat.opacity = Math.max(0, (1 - progress) * 0.75);
+      });
+
+      // Pulso de la baliza del epicentro
+      beaconMat.opacity = 0.5 + Math.sin(elapsed * 4) * 0.45;
+
+      // Movimiento del paquete de datos por el arco de telemetría
+      const packetProgress = (elapsed * 0.35) % 1;
+      const packetPosition = arcCurve.getPoint(packetProgress);
+
+      packetMesh.position.copy(packetPosition);
 
       camera.position.x = smoothPointer.x * 0.28;
       camera.position.y = 0.35 - smoothPointer.y * 0.18;
@@ -274,7 +387,11 @@ export default function HydroScene({ className }: HydroSceneProps) {
       document.removeEventListener("visibilitychange", handleVisibility);
       scene.remove(group, dust);
       group.traverse((object) => {
-        if (object instanceof THREE.Mesh || object instanceof THREE.Points) {
+        if (
+          object instanceof THREE.Mesh ||
+          object instanceof THREE.Points ||
+          object instanceof THREE.Line
+        ) {
           object.geometry.dispose();
           if (Array.isArray(object.material)) {
             object.material.forEach((material) => material.dispose());
