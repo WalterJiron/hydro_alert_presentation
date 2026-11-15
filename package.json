@@ -14,6 +14,7 @@
 		"@heroui/styles": "3.2.7",
 		"@react-aria/utils": "^3.34.1",
 		"@types/three": "^0.187.0",
+		"@vercel/speed-insights": "^2.1.0",
 		"animejs": "^4.5.0",
 		"clsx": "2.1.1",
 		"intl-messageformat": "10.7.18",
